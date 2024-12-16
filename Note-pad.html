@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- favicon -->
+		<link rel="icon" type="image/svg" href="./note-icon.svg" />
+	</link>
+		<title>Note-Pad</title>
+		<style>
+			body {
+				background: #f8fafc;
+			}
+			button {
+				all: unset;
+				display: inline-block;
+				cursor: pointer;
+				font-family: 'Geist Mono', monospace;
+				font-weight: 600;
+				font-size: 14px;
+				letter-spacing: -0.8px;
+				word-spacing: -4px;
+				color: #64748b;
+				transition: all 0.2s ease-in-out;
+				padding: 4px 8px;
+				border-radius: 4px;
+			}
+			button:hover {
+				color: #334155;
+				background-color: white;
+			}
+			#actions {
+				display: flex;
+				gap: 16px;
+				/* width: max-content; */
+				justify-content: flex-end;
+				padding-bottom: 8px;
+				padding-top: 8px;
+			}
+			.menu-box {
+				display: flex;
+				border-bottom: 2px solid #eef2fc;
+				justify-content: space-between;
+			}
+			.app {
+				font-family: 'Inter', sans-serif;
+				font-weight: 800;
+				color: #3b82f6;
+				user-select: none;
+				text-transform: uppercase;
+				font-size: 14px;
+			}
+			.app-box {
+				display: flex;
+				gap: 4px;
+				align-items: center;
+			}
+			#title,
+			#editable {
+				margin-left: 16px;
+				margin-right: 16px;
+				background: white;
+				padding: 8px;
+			}
+			#title {
+				font-family: 'Inter', sans-serif;
+				font-size: 20px;
+				color: #0f172a;
+				margin-bottom: 4px;
+			}
+			#editable {
+				font-family: 'Geist', sans-serif;
+				font-size: 16px;
+				color: #0f172a;
+				min-height: 340px;
+			}
+			[contenteditable] {
+				outline: none; /* Removes the focus outline */
+				border: none; /* Removes any default border */
+			}
+			[contenteditable]:focus {
+				outline: none; /* Removes the focus outline */
+				border: none; /* Removes the border */
+			}
+			[contenteditable]:empty:before {
+				content: attr(data-placeholder);
+				font-size: 16px;
+				color: #888;
+				pointer-events: none;
+			}
+			[contenteditable]:focus:before {
+				content: '';
+			}
+			#msg {
+				font-family: 'Inter', sans-serif;
+				font-size: 14px;
+				display: flex;
+				padding: 8px 16px;
+				border-radius: 4px;
+				max-width: fit-content;
+				position: absolute;
+				top: 14px;
+				left: 50%;
+				transform: translateX(-50%);
+				opacity: 0;
+			}
+			#msg.show {
+				opacity: 1; /* Fade in */
+			}
+			.saveed {
+				background-color: #d1fae5;
+				color: #047857;
+			}
+			.cleared {
+				background-color: #fff7ed;
+				color: #c2410c;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Action buttons -->
+		<div class="menu-box">
+			<div class="app-box">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					height="24px"
+					viewBox="0 -960 960 960"
+					width="20px"
+					fill="#3b82f6">
+					<path
+						d="M280-280h84l240-238-86-86-238 238v86Zm352-266 42-44q6-6 6-14t-6-14l-56-56q-6-6-14-6t-14 6l-44 42 86 86ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm280-590q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z" />
+				</svg>
+				<h3 class="app">Note pad app</h3>
+			</div>
+			<div id="actions">
+				<button id="Save">Save notes</button>
+				<button id="Clear">Clear notes</button>
+			</div>
+		</div>
+		<!-- Alert notification -->
+		<div id="msg" class="cleared">Info massage!</div>
+		<!-- Title -->
+		<h1
+			id="title"
+			contenteditable="true"
+			data-placeholder="Enter your title here..."
+			spellcheck="true"></h1>
+		<!-- Text area -->
+		<div
+			id="editable"
+			contenteditable="true"
+			data-placeholder="Enter your notes here..."
+			spellcheck="true"></div>
+
+		<script>
+			const saveNotes = document.getElementById('Save');
+			const clearNotes = document.getElementById('Clear');
+			const title = document.getElementById('title');
+			const editable = document.getElementById('editable');
+			const msg = document.getElementById('msg');
+
+			saveNotes.addEventListener('click', () => {
+				localStorage.setItem('title', title.innerText);
+				localStorage.setItem('notes', editable.innerText);
+				// alert('Notes saved');
+				msg.classList.remove('cleared');
+				msg.classList.add('saveed');
+				fadeMessage();
+			});
+
+			clearNotes.addEventListener('click', () => {
+				localStorage.clear();
+				title.innerText = '';
+				editable.innerText = '';
+				// alert('Notes cleared');
+				msg.classList.remove('saved');
+				msg.classList.add('cleared');
+				fadeMessage();
+			});
+
+			window.onload = () => {
+				title.innerText = localStorage.getItem('title');
+				editable.innerText = localStorage.getItem('notes');
+			};
+
+			// Function to show and hide the message
+			const fadeMessage = () => {
+				msg.classList.add('show'); // Fade in
+				setTimeout(() => {
+					msg.classList.remove('show'); // Fade out after 5 seconds
+				}, 2000);
+			};
+
+			// fadeMessage();
+		</script>
+	</body>
+</html>
