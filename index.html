@@ -163,6 +163,7 @@
 				localStorage.setItem('title', title.innerText);
 				localStorage.setItem('notes', editable.innerText);
 				// alert('Notes saved');
+				msg.innerText = "Note saved successfully!"
 				msg.classList.remove('cleared');
 				msg.classList.add('saveed');
 				fadeMessage();
@@ -173,6 +174,7 @@
 				title.innerText = '';
 				editable.innerText = '';
 				// alert('Notes cleared');
+				msg.innerText = "Note cleared successfully!"
 				msg.classList.remove('saved');
 				msg.classList.add('cleared');
 				fadeMessage();
